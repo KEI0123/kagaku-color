@@ -1,0 +1,80 @@
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", メイリオ, Meiryo, sans-serif;
+  padding: 20px;
+  background: #f5f7fb;
+  color: #222;
+}
+h1 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 220px;
+}
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+button.secondary {
+  background: #94a3b8;
+}
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e6eef8;
+}
+.swatch .dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 360px;
+}
+.cell {
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.note {
+  margin-top: 12px;
+  color: #334155;
+}
+@media (max-width: 420px) {
+  .grid {
+    max-width: 100%;
+  }
+}

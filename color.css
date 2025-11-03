@@ -15,6 +15,39 @@ h1 {
   align-items: center;
   margin-bottom: 12px;
 }
+/* add-controls */
+.add-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.add-controls input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 220px;
+}
+.add-controls input[type="color"] {
+  width: 44px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.add-controls button {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+.add-controls button.secondary {
+  background: #64748b;
+}
 input[type="text"] {
   padding: 8px;
   border: 1px solid #ccc;

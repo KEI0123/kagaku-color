@@ -20,6 +20,14 @@
       <button id="clearBtn" class="secondary">クリア</button>
     </div>
 
+    <!-- 色を追加するUI -->
+    <div class="add-controls">
+      <input id="colorText" type="text" placeholder="#RRGGBB 形式で入力 (例: #ff0000)" aria-label="カラーHEX" />
+      <input id="colorPicker" type="color" value="#FF6633" aria-label="カラーピッカー" />
+      <button id="addColorBtn" class="secondary">色を追加</button>
+      <button id="resetColorsBtn" class="secondary">初期色に戻す</button>
+    </div>
+
     <div id="palette" class="palette" aria-hidden="false"></div>
 
     <div class="grid" id="grid" aria-live="polite">

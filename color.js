@@ -50,15 +50,12 @@ if (transparentCountInput) {
 function renderPalette() {
     paletteEl.innerHTML = "";
     colors.forEach((c, i) => {
+        // transparent はパレットには表示しない
+        if (c === 'transparent') return;
         const sw = document.createElement("div");
         sw.className = "swatch";
-        // 削除ボタンをつける（data-index で参照）
-        if (c === 'transparent') {
-            // チェッカーボード風に見せる（削除ボタンは表示しない）
-            sw.innerHTML = `<span class="dot" style="background-image:repeating-linear-gradient(45deg,#eee 0 10px,#fff 0 20px);background-size:20px 20px;border:1px solid #cbd5e1"></span><span>${i + 1}</span>`;
-        } else {
-            sw.innerHTML = `<span class="dot" style="background:${c}"></span><span>${i + 1}</span><button class="remove" data-index="${i}" title="この色を削除">×</button>`;
-        }
+        // 番号表示は行わず、色ドットと削除ボタンのみ表示する
+        sw.innerHTML = `<span class="dot" style="background:${c}"></span><button class="remove" data-index="${i}" title="この色を削除">×</button>`;
         paletteEl.appendChild(sw);
     });
 }

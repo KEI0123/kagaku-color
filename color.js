@@ -36,7 +36,17 @@ const grid = document.getElementById("grid");
 const maxIndexSpan = document.getElementById("maxIndex");
 // 初期ロード
 loadColors();
+// transparent の個数を常に1にする（ユーザーリクエスト）
+function ensureSingleTransparent() {
+    // 既存の transparent をすべて取り除き、末尾に一つだけ追加する
+    colors = colors.filter(c => c !== 'transparent');
+    colors.push('transparent');
+}
+
+ensureSingleTransparent();
 maxIndexSpan.textContent = colors.length;
+// 正規化結果を保存しておく（localStorage を更新）
+saveColors();
 
 // パレット表示（番号付き）
 function renderPalette() {
@@ -46,8 +56,8 @@ function renderPalette() {
         sw.className = "swatch";
         // 削除ボタンをつける（data-index で参照）
         if (c === 'transparent') {
-            // チェッカーボード風に見せる
-            sw.innerHTML = `<span class="dot" style="background-image:repeating-linear-gradient(45deg,#eee 0 10px,#fff 0 20px);background-size:20px 20px;border:1px solid #cbd5e1"></span><span>${i + 1}</span><button class="remove" data-index="${i}" title="この色を削除">×</button>`;
+            // チェッカーボード風に見せる（削除ボタンは表示しない）
+            sw.innerHTML = `<span class="dot" style="background-image:repeating-linear-gradient(45deg,#eee 0 10px,#fff 0 20px);background-size:20px 20px;border:1px solid #cbd5e1"></span><span>${i + 1}</span>`;
         } else {
             sw.innerHTML = `<span class="dot" style="background:${c}"></span><span>${i + 1}</span><button class="remove" data-index="${i}" title="この色を削除">×</button>`;
         }
@@ -61,6 +71,11 @@ paletteEl.addEventListener('click', (e) => {
     if (btn) {
         const idx = Number(btn.dataset.index);
         if (!Number.isNaN(idx) && idx >= 0 && idx < colors.length) {
+            // transparent は削除不可
+            if (colors[idx] === 'transparent') {
+                // 念のため削除を防ぐ（UI 上はボタン非表示だが追加の安全策）
+                return;
+            }
             colors.splice(idx, 1);
             saveColors();
             renderPalette();
@@ -139,7 +154,15 @@ document.getElementById('addColorBtn')?.addEventListener('click', () => {
     if (!hex.startsWith('#')) hex = '#' + hex;
     hex = hex.toUpperCase();
     if (!/^#[0-9A-F]{6}$/.test(hex)) return alert('有効な HEX 形式ではありません。例: #FF0000');
-    colors.push(hex);
+    // 透明色は末尾に1つだけ存在させるため、透明の手前に挿入
+    const firstTransparent = colors.indexOf('transparent');
+    if (firstTransparent === -1) {
+        colors.push(hex);
+        // ensure transparent exists
+        ensureSingleTransparent();
+    } else {
+        colors.splice(firstTransparent, 0, hex);
+    }
     saveColors();
     renderPalette();
     maxIndexSpan.textContent = colors.length;
@@ -151,6 +174,8 @@ document.getElementById('addColorBtn')?.addEventListener('click', () => {
 document.getElementById('resetColorsBtn')?.addEventListener('click', () => {
     if (!confirm('色を初期値に戻しますか？保存済みの色は上書きされます。')) return;
     colors = initialColors.slice();
+    // reset のあとも transparent は1つに正規化
+    ensureSingleTransparent();
     saveColors();
     renderPalette();
     maxIndexSpan.textContent = colors.length;

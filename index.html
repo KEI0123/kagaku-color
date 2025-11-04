@@ -10,12 +10,10 @@
     <h1>3×3 ランダムカラー表示</h1>
 
     <p>
-      色配列を用意しました。入力欄に数字（半角）をカンマやスペースで区切って入力すると、入力された番号に対応する色だけをランダムに3×3マスに表示します。番号は
-      <strong>1 から始まる (1-based)</strong> です。
+      色配列を用意しました。ランダム表示ボタンを押すと、登録されている色からランダムに3×3マスに表示します。色はパレットで追加・削除できます。
     </p>
 
     <div class="controls">
-      <input id="nums" type="text" placeholder="例: 1,3,5 または 2 4 7" aria-label="数字入力" />
       <button id="fillBtn">ランダム表示</button>
       <button id="clearBtn" class="secondary">クリア</button>
     </div>
@@ -42,7 +40,7 @@
       <div class="cell" data-pos="9"></div>
     </div>
 
-    <p class="note">補足: 入力が空、または有効な番号が一つもない場合はエラーを表示します。番号は1～<span id="maxIndex"></span> の範囲で指定してください。</p>
+  <p class="note">補足: ランダム表示ボタンを押すと、登録されている全色からランダムに表示します。番号は1～<span id="maxIndex"></span> の範囲でパレットに表示しています（内部参照用）。</p>
 
     <script src="color.js"></script>
   </body>

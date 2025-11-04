@@ -121,12 +121,8 @@ function clearGrid() {
 
 // イベント
 document.getElementById("fillBtn").addEventListener("click", () => {
-    const v = document.getElementById("nums").value;
-    const idxs = parseInput(v);
-    if (idxs.length === 0) {
-        alert("有効な番号が見つかりませんでした。入力例: 1,3,5");
-        return;
-    }
+    // 入力欄を削除したため、常に登録されている全色を対象にランダム表示する
+    const idxs = colors.map((_, i) => i);
     fillGridWithRandom(idxs);
 });
 document.getElementById("clearBtn").addEventListener("click", clearGrid);

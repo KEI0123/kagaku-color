@@ -36,17 +36,15 @@ const grid = document.getElementById("grid");
 const maxIndexSpan = document.getElementById("maxIndex");
 // 初期ロード
 loadColors();
-// transparent の個数を常に1にする（ユーザーリクエスト）
-function ensureSingleTransparent() {
-    // 既存の transparent をすべて取り除き、末尾に一つだけ追加する
-    colors = colors.filter(c => c !== 'transparent');
-    colors.push('transparent');
-}
+// transparent 個数制御 UI 要素（index.html に追加されている場合）
+const transparentCountInput = document.getElementById('transparentCount');
+const applyTransparentBtn = document.getElementById('applyTransparentBtn');
 
-ensureSingleTransparent();
 maxIndexSpan.textContent = colors.length;
-// 正規化結果を保存しておく（localStorage を更新）
-saveColors();
+// UI に現在の transparent 個数を反映
+if (transparentCountInput) {
+    transparentCountInput.value = String(colors.filter(c => c === 'transparent').length);
+}
 
 // パレット表示（番号付き）
 function renderPalette() {
@@ -84,6 +82,19 @@ paletteEl.addEventListener('click', (e) => {
     }
 });
 
+// transparent の個数を設定するユーティリティ
+function setTransparentCount(n) {
+    if (!Number.isInteger(n) || n < 0) return;
+    // 既存の transparent をすべて取り除く
+    colors = colors.filter(c => c !== 'transparent');
+    // 指定個数分だけ末尾に追加
+    for (let i = 0; i < n; i++) colors.push('transparent');
+    saveColors();
+    renderPalette();
+    maxIndexSpan.textContent = colors.length;
+    if (transparentCountInput) transparentCountInput.value = String(n);
+}
+
 function parseInput(str) {
     if (!str) return [];
     // 数字だけ抽出（例: '1, 3 5' -> ['1','3','5']）
@@ -97,18 +108,46 @@ function parseInput(str) {
 
 function fillGridWithRandom(selectedIdxs) {
     const cells = grid.querySelectorAll(".cell");
-    const selectedColors = selectedIdxs.map((i) => colors[i]);
-    if (selectedColors.length === 0) {
-        alert("有効な番号がありません。1〜" + colors.length + " の範囲で指定してください。");
+    const total = cells.length;
+    // colors 配列内の transparent の個数を取得
+    const transparentCount = colors.filter(c => c === 'transparent').length;
+    // 選択対象の色プール（transparent を除外）
+    const colorPool = selectedIdxs.map(i => colors[i]).filter(c => c !== 'transparent');
+
+    // 両方とも空になるケースをハンドル（表示できるものが何もない場合）
+    if (colorPool.length === 0 && transparentCount === 0) {
+        alert("表示可能な色がありません。");
         return;
     }
-    cells.forEach((cell, i) => {
-        const c = selectedColors[Math.floor(Math.random() * selectedColors.length)];
-        cell.style.background = c;
-        // 文字色は背景が暗ければ白、明るければ黒
-        const textColor = getContrastYIQ(c) === "dark" ? "#fff" : "#111";
-        cell.style.color = textColor;
-        cell.textContent = "";
+
+    // transparent を配置する位置をランダムに選ぶ（重複なし）
+    const t = Math.min(transparentCount, total);
+    const transPositions = new Set();
+    while (transPositions.size < t) {
+        transPositions.add(Math.floor(Math.random() * total));
+    }
+
+    cells.forEach((cell, idx) => {
+        if (transPositions.has(idx)) {
+            // 透明セル
+            cell.style.background = 'transparent';
+            // 透明は背景が薄いグラデの上に載るので文字は非表示にする
+            cell.textContent = '';
+            cell.style.color = '#111';
+        } else {
+            // 色をランダムに選ぶ（colorPool が空の場合は透明にする）
+            if (colorPool.length === 0) {
+                cell.style.background = 'transparent';
+                cell.textContent = '';
+                cell.style.color = '#111';
+                return;
+            }
+            const c = colorPool[Math.floor(Math.random() * colorPool.length)];
+            cell.style.background = c;
+            const textColor = getContrastYIQ(c) === "dark" ? "#fff" : "#111";
+            cell.style.color = textColor;
+            cell.textContent = '';
+        }
     });
 }
 
@@ -154,12 +193,10 @@ document.getElementById('addColorBtn')?.addEventListener('click', () => {
     if (!hex.startsWith('#')) hex = '#' + hex;
     hex = hex.toUpperCase();
     if (!/^#[0-9A-F]{6}$/.test(hex)) return alert('有効な HEX 形式ではありません。例: #FF0000');
-    // 透明色は末尾に1つだけ存在させるため、透明の手前に挿入
+    // 透明色が末尾にいる可能性があるため、その手前に挿入
     const firstTransparent = colors.indexOf('transparent');
     if (firstTransparent === -1) {
         colors.push(hex);
-        // ensure transparent exists
-        ensureSingleTransparent();
     } else {
         colors.splice(firstTransparent, 0, hex);
     }
@@ -174,11 +211,16 @@ document.getElementById('addColorBtn')?.addEventListener('click', () => {
 document.getElementById('resetColorsBtn')?.addEventListener('click', () => {
     if (!confirm('色を初期値に戻しますか？保存済みの色は上書きされます。')) return;
     colors = initialColors.slice();
-    // reset のあとも transparent は1つに正規化
-    ensureSingleTransparent();
     saveColors();
     renderPalette();
     maxIndexSpan.textContent = colors.length;
+});
+
+// apply ボタンがあればイベントを登録
+applyTransparentBtn?.addEventListener('click', () => {
+    const val = parseInt((transparentCountInput?.value || '0'), 10);
+    if (Number.isNaN(val) || val < 0) return alert('無色の個数には 0 以上の整数を指定してください');
+    setTransparentCount(val);
 });
 
 // 初期描画

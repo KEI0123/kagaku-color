@@ -22,6 +22,10 @@
       <input id="colorPicker" type="color" value="#FF6633" aria-label="カラーピッカー" />
       <button id="addColorBtn" class="secondary">色を追加</button>
       <button id="resetColorsBtn" class="secondary">初期色に戻す</button>
+      <!-- transparent 個数を制御する UI -->
+      <label for="transparentCount" style="margin-left: 8px">無色の個数</label>
+      <input id="transparentCount" type="number" min="0" value="1" style="width: 72px; margin-left: 6px" aria-label="無色の個数" />
+      <button id="applyTransparentBtn" class="secondary">適用</button>
     </div>
 
     <div id="palette" class="palette" aria-hidden="false"></div>
